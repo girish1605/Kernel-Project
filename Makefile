@@ -9,7 +9,4 @@ client.o:
 	gcc -c -o ./clientDir/client.o ./clientDir/client.c
 
 clean:
-	rm server
-	rm client 
-	rm ./serverDir/server.o 
-	rm ./clientDir/client.o	
+	rm server client ./serverDir/server.o ./clientDir/client.o	
