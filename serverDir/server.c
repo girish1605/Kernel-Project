@@ -5,12 +5,14 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
 #include "../configDir/connection.h"
 
 #define MAX_CONNECTION 5
+#define CHILD 0
 
-int main(int argv, char** argc)
+int main(int argv, char* argc[])
 {
 	int sockfd, connfd, retval;
 	char buff[BUFSIZE];
@@ -19,10 +21,7 @@ int main(int argv, char** argc)
 
 	/* Create Socket */
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if(sockfd < 0) {
-		perror("Failed to create socket");
-		exit(1);
-	}
+	CHECK_ERROR((sockfd < 0), "Socket");	
 
 	/* Bind Socket */
 	bzero(&servAddr, sizeof(servAddr));
@@ -31,30 +30,33 @@ int main(int argv, char** argc)
 	servAddr.sin_addr.s_addr = INADDR_ANY;
 
 	retval = bind(sockfd, (struct sockaddr *)&servAddr, sizeof(servAddr));
-	if(retval < 0) {
-		perror("Failed to bind socket");
-		exit(2);
-	}
-
+	CHECK_ERROR((retval < 0), "Bind");
+	
 	/* Listen */
 	retval = listen(sockfd, MAX_CONNECTION);
-
-	if(retval < 0) {
-		perror("Failed to listen");
-		exit(3);
-	}
-
+	CHECK_ERROR((retval < 0), "Listen");
+	
 	do {
+		pid_t pid;
 		clientLen = sizeof(clientAddr);
 		connfd = accept(sockfd, (struct sockaddr *)&clientAddr, &clientLen);
-		if(connfd < 0) {
-			perror("Failed to accept");
-			exit(4);
-		}
+		CHECK_ERROR((connfd < 0), "Accept");		
 
-		printf("Yey! Client Connected\n");
-		printf("Client's port no. :: %d\n",ntohs(clientAddr.sin_port));
-	
+		pid = fork();
+		if(pid == CHILD) {
+			printf("Yey! Client Connected\n");
+			printf("Client's ip : port >> %s : %d\n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));	
+			while (1) {
+				memset(buff, '\0', BUFSIZE);
+                                printf("Me :: ");
+                                scanf(" %[^\n]", buff);
+                                retval = send(connfd, buff, strlen(buff), 0);
+
+				memset(buff, '\0', BUFSIZE);
+				retval = recv(connfd, buff, BUFSIZE, 0);
+				printf("User ::  %s\n", buff);
+			}
+		}
 	} while(1);
 
 	return 0;
