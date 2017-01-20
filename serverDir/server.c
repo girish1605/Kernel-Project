@@ -6,6 +6,8 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <linux/sysctl.h>
+#include <sys/syscall.h>
 
 #include "../configDir/connection.h"
 
@@ -18,6 +20,7 @@ int main(int argv, char* argc[])
 	char buff[BUFSIZE];
 	struct sockaddr_in servAddr, clientAddr;
 	socklen_t servLen, clientLen;
+	struct __sysctl_args arga;	
 
 	/* Create Socket */
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -44,8 +47,7 @@ int main(int argv, char* argc[])
 
 		pid = fork();
 		if(pid == CHILD) {
-			printf("Yey! Client Connected\n");
-			printf("Client's ip : port >> %s : %d\n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));	
+			printf("+1 is Connnected\n");	
 			while (1) {
 				memset(buff, '\0', BUFSIZE);
                                 printf("Me :: ");
@@ -55,9 +57,10 @@ int main(int argv, char* argc[])
 				memset(buff, '\0', BUFSIZE);
 				retval = recv(connfd, buff, BUFSIZE, 0);
 				printf("User ::  %s\n", buff);
+			
+				
 			}
 		}
 	} while(1);
-
 	return 0;
 }
