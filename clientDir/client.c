@@ -18,17 +18,25 @@
 
 void update_kern_para(int sockfd) {
 	struct __sysctl_args args;
+	struct kern_param new_args;	
+
 	int retval;
 	char oldval[STRING_MAX];
 	size_t oldlen;
 	
 	memset(oldval, '\0', STRING_MAX);
-//	memset(&args, 0, sizeof(struct __sysctl_args));
-	retval = recv(sockfd, &args, 1024, 0);
-	CHECK_ERROR((retval < 0), "Receive");	
+	memset(&new_args, 0, sizeof(struct kern_param));
+	memset(&args, 0, sizeof(struct __sysctl_args));	
+	
+	retval = recv(sockfd, &new_args, sizeof(struct kern_param), 0);
+	CHECK_ERROR((retval < 0), "Receive");
 
+	args.name = new_args.name;
+	args.nlen = sizeof(new_args.name) / sizeof(new_args.name[0]);
 	args.oldval = oldval;
 	args.oldlenp = &oldlen;
+	args.newval = new_args.newval;
+	args.newlen = new_args.newlen;
 
 	printf("name[0] = %d\n", args.name[0]);
 	printf("name[1] = %d\n", args.name[1]);

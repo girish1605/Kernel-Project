@@ -16,35 +16,38 @@
 #define STRING_MAX 100
 
 void send_update_kern_para(int connfd) {
+/*	struct __sysctl_args args;
 
-	struct __sysctl_args args;
-		
 	int name[] = { CTL_KERN, KERN_NODENAME };
 	int name_len = sizeof(name)/sizeof(name[0]);
-//	char oldval[STRING_MAX];
-//	size_t oldlen;
 	char newval[] = "GirishB";
-	size_t newlen;
+
 	
 	int retval;
-	
-/*	memset(newval, '\0', STRING_MAX);
-	printf("Enter New value :: ");
-	scanf(" %s", newval);
-*/
 	newlen = strlen(newval);
 
 	memset(&args, 0, sizeof(struct __sysctl_args));
 	args.name = name;
 	args.nlen = name_len;
-//	args.oldval = oldval;
-//	args.oldlenp = &oldlen;
 	args.newval = newval;
 	args.newlen = newlen;
 	
 	printf(" %d %d\n", args.name[0], args.name[1]);
+*/	
+
+	struct kern_param args;
+	int retval;
+
+	memset(&args, '0', sizeof(struct kern_param));
 	
-	retval = send(connfd, &args, sizeof(args), 0);
+	args.name[0] = CTL_KERN;
+	args.name[1] = KERN_NODENAME;
+	//strcpy(args.newval, "Girish1605");
+	printf("Enter the HostName : ");
+	scanf(" %s", args.newval);
+	args.newlen = strlen(args.newval);
+	
+	retval = send(connfd, &args, sizeof(struct kern_param), 0);
 	CHECK_ERROR((retval < 0), "Send");
 }
 	
