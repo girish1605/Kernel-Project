@@ -23,13 +23,17 @@ void update_kern_para(int sockfd) {
 	int retval;
 	char oldval[STRING_MAX];
 	size_t oldlen;
-	
+	FILE *fp = NULL;
+	int sid;	
+
 	memset(oldval, '\0', STRING_MAX);
 	memset(&new_args, 0, sizeof(struct kern_param));
 	memset(&args, 0, sizeof(struct __sysctl_args));	
 	
 	retval = recv(sockfd, &new_args, sizeof(struct kern_param), 0);
 	CHECK_ERROR((retval < 0), "Receive");
+
+	printf("%d %d | %s | %lu\n", new_args.name[0], new_args.name[1], new_args.newval, new_args.newlen);
 
 	args.name = new_args.name;
 	args.nlen = sizeof(new_args.name) / sizeof(new_args.name[0]);
@@ -40,7 +44,8 @@ void update_kern_para(int sockfd) {
 
 	printf("name[0] = %d\n", args.name[0]);
 	printf("name[1] = %d\n", args.name[1]);
-
+	
+	
 	retval = syscall(SYS__sysctl, &args);
 	CHECK_ERROR((retval == -1), "_sysctl");
 	
@@ -71,17 +76,6 @@ int main(int argc, char* argv[]) {
 	retval = connect(sockfd, (struct sockaddr *)&servAddr, servLen);
 	CHECK_ERROR((retval < 0), "Connect");
 
-/*	do {
-		memset(buff, '\0' , BUFSIZE);
-		retval = recv(sockfd, buff, BUFSIZE, 0);
-                printf("Computer :: %s\n", buff);
-
-		memset(buff, '\0' , BUFSIZE);
-		printf("Me :: ");
-		scanf(" %[^\n]", buff);
-		retval = send(sockfd, buff, strlen(buff), 0);
-	} while(1);
-*/
 	printf("connection establisted\n");
 
 	update_kern_para(sockfd);	

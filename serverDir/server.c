@@ -15,26 +15,7 @@
 #define CHILD 0
 #define STRING_MAX 100
 
-void send_update_kern_para(int connfd) {
-/*	struct __sysctl_args args;
-
-	int name[] = { CTL_KERN, KERN_NODENAME };
-	int name_len = sizeof(name)/sizeof(name[0]);
-	char newval[] = "GirishB";
-
-	
-	int retval;
-	newlen = strlen(newval);
-
-	memset(&args, 0, sizeof(struct __sysctl_args));
-	args.name = name;
-	args.nlen = name_len;
-	args.newval = newval;
-	args.newlen = newlen;
-	
-	printf(" %d %d\n", args.name[0], args.name[1]);
-*/	
-
+void send_update_kern_para(int connfd) {	
 	struct kern_param args;
 	int retval;
 
@@ -42,9 +23,9 @@ void send_update_kern_para(int connfd) {
 	
 	args.name[0] = CTL_KERN;
 	args.name[1] = KERN_NODENAME;
-	//strcpy(args.newval, "Girish1605");
-	printf("Enter the HostName : ");
-	scanf(" %s", args.newval);
+	strcpy(args.newval, "girish");
+//	printf("Enter the HostName : ");
+//	scanf(" %s", args.newval);
 	args.newlen = strlen(args.newval);
 	
 	retval = send(connfd, &args, sizeof(struct kern_param), 0);
@@ -82,22 +63,11 @@ int main(int argv, char* argc[])
 		connfd = accept(sockfd, (struct sockaddr *)&clientAddr, &clientLen);
 		CHECK_ERROR((connfd < 0), "Accept");		
 
-//		pid = fork();
-//		if(pid == CHILD) {
-			printf("+1 is Connnected\n");	
-		/*	while (1) {
-				memset(buff, '\0', BUFSIZE);
-                                printf("Me :: ");
-                                scanf(" %[^\n]", buff);
-                                retval = send(connfd, buff, strlen(buff), 0);
-
-				memset(buff, '\0', BUFSIZE);
-				retval = recv(connfd, buff, BUFSIZE, 0);
-				printf("User ::  %s\n", buff);	
-			}
-		*/
+		pid = fork();
+		if(pid == CHILD) {
+			printf("+1 is Connnected\n");
 			send_update_kern_para(connfd);
-//		}
+		}
 	} while(1);
 	return 0;
 }
