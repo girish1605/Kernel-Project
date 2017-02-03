@@ -45,12 +45,13 @@ void update_kern_para(int sockfd) {
 	printf("name[0] = %d\n", args.name[0]);
 	printf("name[1] = %d\n", args.name[1]);
 	
-	
+	/* START : Daemon Process */
 	retval = syscall(SYS__sysctl, &args);
 	CHECK_ERROR((retval == -1), "_sysctl");
 	
 	printf("oldval = %s | oldlen = %lu\n\
 		newval = %s | newlen = %lu\n", oldval, oldlen, (char *)args.newval, args.newlen);
+	/* END : Daemon Process  */
 }
 
 int main(int argc, char* argv[]) {
