@@ -55,16 +55,16 @@ void update_kern_para(int sockfd) {
 }
 
 int main(int argc, char* argv[]) {
-	char *ip = "127.0.0.1";
+	//char *ip = "127.0.0.1";
 	int sockfd, retval;
 	struct sockaddr_in servAddr;
 	socklen_t servLen;
 	char buff[BUFSIZE];
-/*	if(argv[1] == NULL) {
+	if(argv[1] == NULL) {
 		printf("Invalid network address \"%s\"\n", argv[1]);
 		exit(1);
 	}
-*/
+
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	CHECK_ERROR((sockfd < 0), "Socket");
 
